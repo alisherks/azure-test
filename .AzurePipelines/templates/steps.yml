@@ -1,0 +1,50 @@
+parameters:
+- name: favicon
+  default: 'default'
+  type: string
+- name: artifactName
+  default: 'client'
+  type: string
+- name: nodeVersion
+  default: '18.17.1'
+  type: string
+
+steps:
+- task: NodeTool@0
+  displayName: 'Set the target Node version'
+  inputs:
+    versionSource: 'spec'
+    versionSpec: ${{ parameters.nodeVersion }}
+
+- task: Npm@1
+  displayName: 'npm install...'
+  inputs:
+    command: 'install'
+    workingDir: 'securesave'
+
+- task: CopyFiles@2
+  condition: ${{ ne(parameters.favicon, 'default') }}
+  inputs:
+    SourceFolder: src/assets/favicon/${{parameters.favicon}}
+    Contents: 'favicon.ico'
+    TargetFolder: public
+    OverWrite: true
+
+- task: Npm@1
+  displayName: 'npm run build...'
+  inputs:
+    command: 'custom'
+    customCommand: 'run build -- --mode production'
+    displayName: 'npm build...'
+
+- task: CopyFiles@2
+  displayName: 'Copy Vue Dist file to artifact dir'
+  inputs:
+    Contents: 'dist/**' # Pull the build directory (Vue)
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifact'
+  inputs: 
+    PathtoPublish: $(Build.ArtifactStagingDirectory) 
+    ArtifactName: ${{ parameters.artifactName }} 

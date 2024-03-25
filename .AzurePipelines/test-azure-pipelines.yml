@@ -1,0 +1,21 @@
+trigger:
+- main
+pr: 
+  branches:
+    exclude:
+    - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: env_01
+    steps:
+    - template: templates/steps.yml
+      parameters:
+        artifactName: 'env_01-client'
+  - stage: env_02
+    steps:
+    - template: templates/steps.yml
+      parameters:
+        artifactName: 'env_02-client'

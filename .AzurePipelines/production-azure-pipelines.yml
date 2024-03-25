@@ -1,0 +1,23 @@
+trigger:
+- main
+pr: 
+  branches:
+    exclude:
+    - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: prod_01
+    steps:
+    - template: templates/steps.yml
+      parameters:
+        artifactName: 'prod_01-client'
+        favicon: 'alien'
+  - stage: prod_02
+    steps:
+    - template: templates/steps.yml
+      parameters:
+        artifactName: 'prod_02-client'
+        favicon: 'alien'
